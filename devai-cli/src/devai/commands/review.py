@@ -125,7 +125,8 @@ def validate_and_correct_json(json_text):
 @click.command(name='code')
 @click.option('-c', '--context', required=False, type=str, default="")
 @click.option('-o', '--output', type=click.Choice(['markdown', 'json', 'table']), default='markdown', help="The desired output format, markdown is the defualt.")
-def code(context, output):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def code(context, output, config):
     """
     This function performs a code review using the Generative Model API.
 
@@ -135,6 +136,11 @@ def code(context, output):
     """
     source = '''
             ### Context (code) ###
+            {}
+
+            '''
+    standards = '''
+            ### Best Practices ###
             {}
 
             '''
@@ -295,9 +301,11 @@ Provide an overview or overall impression entry for the code as the first entry.
     source = source.format(format_files_as_string(context))
 
     code_chat_model = GenerativeModel(MODEL_NAME)
+    best_practices = standards.format(format_files_as_string(config))
     with telemetry.tool_context_manager(USER_AGENT):
         code_chat = code_chat_model.start_chat(response_validation=False)
         code_chat.send_message(qry)
+        code_chat.send_message(best_practices)
         response = code_chat.send_message(source)
 
 
@@ -358,7 +366,8 @@ Provide an overview or overall impression entry for the code as the first entry.
 
 @click.command()
 @click.option('-c', '--context', required=False, type=str, default="")
-def performance(context):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def performance(context, config):
     """
     This function performs a performance review using the Generative Model API.
 
@@ -369,6 +378,11 @@ def performance(context):
     
     source='''
             ### Context (code) ###
+            {}
+
+            '''
+    standards = '''
+            ### Best Practices ###
             {}
 
             '''
@@ -431,11 +445,13 @@ def performance(context):
             '''
     # Load files as text into source variable
     source=source.format(format_files_as_string(context))
+    best_practices = standards.format(format_files_as_string(config))
 
     code_chat_model = GenerativeModel(MODEL_NAME)
     with telemetry.tool_context_manager(USER_AGENT):
         code_chat = code_chat_model.start_chat(response_validation=False)
         code_chat.send_message(qry)
+        code_chat.send_message(best_practices)
         response = code_chat.send_message(source)
 
     click.echo(f"{response.text}")
@@ -445,7 +461,8 @@ def performance(context):
 
 @click.command()
 @click.option('-c', '--context', required=False, type=str, default="")
-def security(context):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def security(context, config):
     """
     This function performs a security review using the Generative Model API.
 
@@ -458,7 +475,11 @@ def security(context):
             ### Context (code) ###: 
             {}
             '''
-    
+    standards = '''
+            ### Best Practices ###
+            {}
+
+            '''
     qry = get_prompt('review_query')
 
     if qry is None:
@@ -537,9 +558,11 @@ def security(context):
     source=source.format(format_files_as_string(context))
     
     code_chat_model = GenerativeModel(MODEL_NAME)
+    best_practices = standards.format(format_files_as_string(config))
     with telemetry.tool_context_manager(USER_AGENT):
         code_chat = code_chat_model.start_chat(response_validation=False)
         code_chat.send_message(qry)
+        code_chat.send_message(best_practices)
         response = code_chat.send_message(source)
 
     click.echo(f"{response.text}")
@@ -549,7 +572,8 @@ def security(context):
 
 @click.command()
 @click.option('-c', '--context', required=False, type=str, default="")
-def testcoverage(context):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def testcoverage(context, config):
     """
     This function performs a test coverage review using the Generative Model API.
 
@@ -560,6 +584,11 @@ def testcoverage(context):
     source='''
             ### Context (code) ###: 
             {}
+            '''
+    standards = '''
+            ### Best Practices ###
+            {}
+
             '''
     qry = get_prompt('review_query')
 
@@ -626,9 +655,12 @@ def testcoverage(context):
     source=source.format(format_files_as_string(context))
     
     code_chat_model = GenerativeModel(MODEL_NAME)
+    best_practices = standards.format(format_files_as_string(config))
+
     with telemetry.tool_context_manager(USER_AGENT):
         code_chat = code_chat_model.start_chat(response_validation=False)
         code_chat.send_message(qry)
+        code_chat.send_message(best_practices)
         response = code_chat.send_message(source)
 
     click.echo(f"{response.text}")
@@ -638,12 +670,18 @@ def testcoverage(context):
 
 @click.command()
 @click.option('-c', '--context', required=False, type=str, default="")
-def blockers(context):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def blockers(context, config):
 
 
     source='''
             ### Context (code) ###: 
             {}
+            '''
+    standards = '''
+            ### Best Practices ###
+            {}
+
             '''
     qry = get_prompt('review_query')
 
@@ -680,11 +718,12 @@ def blockers(context):
         '''
     # Load files as text into source variable
     source=source.format(format_files_as_string(context))
-    
+    best_practices = standards.format(format_files_as_string(config))
     code_chat_model = GenerativeModel(MODEL_NAME)
     with telemetry.tool_context_manager(USER_AGENT):
         code_chat = code_chat_model.start_chat(response_validation=False)
         code_chat.send_message(qry)
+        code_chat.send_message(best_practices)
         response = code_chat.send_message(source)
 
     click.echo(f"{response.text}")
@@ -696,7 +735,8 @@ def blockers(context):
 @click.command(name='impact')
 @click.option('-c', '--current', required=True, type=str, default="")
 @click.option('-t', '--target', required=True, type=str, default="")
-def impact(current, target):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def impact(current, target, config):
     """
     This function performs an impact analysis using the Generative Model API.
 
@@ -716,6 +756,11 @@ def impact(current, target):
     {}
 
     '''
+    standards = '''
+            ### Best Practices ###
+            {}
+
+            '''
     qry = get_prompt('review_query')
 
     if qry is None:
@@ -754,9 +799,12 @@ def impact(current, target):
     target_source=target_source.format(format_files_as_string(target))
     
     code_chat_model = GenerativeModel(MODEL_NAME)
+    best_practices = standards.format(format_files_as_string(config))
+
     with telemetry.tool_context_manager(USER_AGENT):
         code_chat = code_chat_model.start_chat(response_validation=False)
         code_chat.send_message(qry)
+        code_chat.send_message(best_practices)
         response = code_chat.send_message(current_source)
         response = code_chat.send_message(target_source)
 
@@ -768,7 +816,8 @@ def impact(current, target):
 @click.command(name='imgdiff')
 @click.option('-c', '--current', required=True, type=str, default="")
 @click.option('-t', '--target', required=True, type=str, default="")
-def imgdiff(current, target):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def imgdiff(current, target, config):
     """
     This function performs an image diff analysis using the Generative Model API.
 
@@ -785,6 +834,11 @@ def imgdiff(current, target):
     IMAGE 2:
 
     '''
+    standards = '''
+            ### Best Practices ###
+            {}
+
+            '''
     qry = get_prompt('review_query')
 
     if qry is None:
@@ -795,7 +849,8 @@ def imgdiff(current, target):
         methodology employed to arrive at your conclusions.
         '''
     
-    contents = [qry, after_state, load_image_from_path(current),
+    best_practices = standards.format(format_files_as_string(config))
+    contents = [qry, best_practices, after_state, load_image_from_path(current),
                 before_state, load_image_from_path(target)]
 
     code_chat_model = GenerativeModel(MODEL_NAME)
@@ -808,7 +863,8 @@ def imgdiff(current, target):
 @click.command(name='image')
 @click.option('-f', '--file', required=True, type=str, default="")
 @click.option('-p', '--prompt', required=True, type=str, default="")
-def image(file, prompt):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def image(file, prompt, config):
     """
     This function performs an image analysis using the Generative Model API.
 
@@ -824,8 +880,13 @@ def image(file, prompt):
         INSTRUCTIONS:
         {prompt}
         '''
-    
-    contents = [qry, load_image_from_path(file)]
+    standards = '''
+            ### Best Practices ###
+            {}
+
+            '''
+    best_practices = standards.format(format_files_as_string(config))
+    contents = [qry, best_practices, load_image_from_path(file)]
 
     code_chat_model = GenerativeModel(MODEL_NAME)
     with telemetry.tool_context_manager(USER_AGENT):
@@ -837,7 +898,8 @@ def image(file, prompt):
 @click.command(name='video')
 @click.option('-f', '--file', required=True, type=str, default="")
 @click.option('-p', '--prompt', required=True, type=str, default="")
-def video(file, prompt):
+@click.option('-cfg', '--config', required=False, type=str, default=".gemini")
+def video(file, prompt, config):
     """
     This function performs a video analysis using the Generative Model API.
 
@@ -853,7 +915,11 @@ def video(file, prompt):
         INSTRUCTIONS:
         {prompt}
         '''
+    standards = '''
+            ### Best Practices ###
+            {}
 
+            '''
     with open(file, "rb") as f:
         video_data = f.read()
 
@@ -862,7 +928,8 @@ def video(file, prompt):
         mime_type="video/mp4",
     )
 
-    contents = [qry, video]
+    best_practices = standards.format(format_files_as_string(config))
+    contents = [qry, best_practices, video]
 
     code_chat_model = GenerativeModel(MODEL_NAME)
     with telemetry.tool_context_manager(USER_AGENT):

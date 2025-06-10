@@ -3,3 +3,5 @@ venv
 devai-cli/chroma_db_store/
 site/
 devai-api/app/__pycache__
+.DS_Store
+.idea

@@ -31,7 +31,16 @@ setup(
     ],
     install_requires=[
         'click==8.1.7',
-        'google-cloud-aiplatform'
+        'google-cloud-aiplatform',
+        'langchain==0.2.10',
+        'langchain-community==0.2.10',
+        'langchain_google_vertexai==1.0.5',
+        'atlassian-python-api==3.41.10',
+        'chromadb==0.5.0',
+        'google-cloud-secret-manager==2.20.0',
+        'google-crc32c==1.5.0',
+        'rich==13.7.1',
+        'json-repair==0.23.1'
     ],
     entry_points={
         'console_scripts': [
