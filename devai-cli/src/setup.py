@@ -31,7 +31,9 @@ setup(
     ],
     install_requires=[
         'click==8.1.7',
-        'google-cloud-aiplatform',
+        'google-cloud-aiplatform==1.48.0',
+        'jira==3.8.0',
+        'python-gitlab==4.4.0',
         'langchain==0.2.10',
         'langchain-community==0.2.10',
         'langchain_google_vertexai==1.0.5',
