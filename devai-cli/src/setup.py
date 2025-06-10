@@ -40,7 +40,10 @@ setup(
         'google-cloud-secret-manager==2.20.0',
         'google-crc32c==1.5.0',
         'rich==13.7.1',
-        'json-repair==0.23.1'
+        'json-repair==0.23.1',
+        'gitdb==4.0.11',
+        'GitPython==3.1.43',
+        'PyGithub==2.5.0'
     ],
     entry_points={
         'console_scripts': [
